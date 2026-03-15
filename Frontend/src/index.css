@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Hide React error overlay */
+iframe[src*="react-error-overlay"] {
+  display: none !important;
+}
+
+/* Hide vite error overlay */
+vite-error-overlay {
+  display: none !important;
+}
+
+/* Custom error toast styles */
+.toast-error {
+  background: #ef4444 !important;
+  color: white !important;
+}
+
+.toast-success {
+  background: #10b981 !important;
+  color: white !important;
+}

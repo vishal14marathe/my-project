@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>my-project</title>
+
+    
+    <!-- Suppress all error overlays -->
+<script>
+  // Prevent any error overlays
+  window.addEventListener('error', (e) => {
+    if (e.message?.includes('401') || e.message?.includes('Unauthorized')) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, true);
+  
+  window.addEventListener('unhandledrejection', (e) => {
+    if (e.reason?.message?.includes('401') || e.reason?.message?.includes('Unauthorized')) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, true);
+</script>
+    
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
