@@ -20,10 +20,7 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 
 // Define allowed origins
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://task-frontend-4zvb.onrender.com",
-];
+const allowedOrigins = ["https://task-frontend-4zvb.onrender.com/"];
 
 // Add FRONTEND_URL from environment if it exists and isn't already in the list
 if (
