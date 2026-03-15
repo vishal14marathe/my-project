@@ -8,20 +8,15 @@ export default defineConfig({
     open: true,
   },
   build: {
-    minify: "terser",
-    terserOptions: {
-      compress: {
-        drop_console: true, // Remove all console.log in production
-        drop_debugger: true,
-        pure_funcs: [
-          "console.log",
-          "console.error",
-          "console.warn",
-          "console.info",
-          "console.debug",
-        ],
-      },
-    },
-    sourcemap: false, // Disable sourcemaps in production
+    // Remove terser options if you don't need them
+    minify: "esbuild", // Use esbuild instead of terser (faster, built-in)
+    // Or if you want to keep terser:
+    // minify: 'terser',
+    // terserOptions: {
+    //   compress: {
+    //     drop_console: true,
+    //     drop_debugger: true
+    //   }
+    // }
   },
 });
