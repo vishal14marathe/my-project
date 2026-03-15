@@ -1,22 +1,23 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    open: true,
+    open: true
   },
   build: {
-    // Remove terser options if you don't need them
-    minify: "esbuild", // Use esbuild instead of terser (faster, built-in)
-    // Or if you want to keep terser:
-    // minify: 'terser',
-    // terserOptions: {
-    //   compress: {
-    //     drop_console: true,
-    //     drop_debugger: true
-    //   }
-    // }
-  },
-});
+    outDir: 'dist',
+    sourcemap: false,
+    minify: 'esbuild', // Use esbuild instead of terser
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          ui: ['axios', 'react-hot-toast']
+        }
+      }
+    }
+  }
+})
