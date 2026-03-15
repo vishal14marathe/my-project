@@ -19,12 +19,33 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 // Cookie parser
 app.use(cookieParser());
 
-// CORS configuration
+// Define allowed origins
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://task-frontend-4zvb.onrender.com",
+];
+
+// Add FRONTEND_URL from environment if it exists and isn't already in the list
+if (
+  process.env.FRONTEND_URL &&
+  !allowedOrigins.includes(process.env.FRONTEND_URL)
+) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
+// CORS configuration - FIXED for multiple origins
 const corsOptions = {
-  origin:
-    process.env.NODE_ENV === "production"
-      ? process.env.FRONTEND_URL
-      : "http://localhost:5173",
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, etc)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log("Blocked origin:", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -42,13 +63,13 @@ app.options("*", cors(corsOptions));
 // Trust proxy - required for secure cookies in production
 app.set("trust proxy", 1);
 
-// Request logging (optional - use a proper logging library in production)
-if (process.env.NODE_ENV !== "production") {
-  app.use((req, res, next) => {
-    console.log(`${req.method} ${req.url}`);
-    next();
-  });
-}
+// Request logging
+app.use((req, res, next) => {
+  console.log(
+    `${req.method} ${req.url} - Origin: ${req.headers.origin || "No Origin"}`,
+  );
+  next();
+});
 
 // Import routes
 const auth = require("./src/routes/authRoutes");
@@ -65,6 +86,7 @@ app.get("/health", (req, res) => {
     message: "Server is running",
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
+    allowedOrigins: allowedOrigins, // This helps with debugging
   });
 });
 
@@ -99,19 +121,19 @@ const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
   console.log(`\n🚀 Server running on port ${PORT}`);
   console.log(`📡 Environment: ${process.env.NODE_ENV || "development"}`);
-  console.log(`🌍 CORS enabled for: ${corsOptions.origin}\n`);
+  console.log(`🌍 CORS enabled for origins:`);
+  allowedOrigins.forEach((origin) => console.log(`   - ${origin}`));
+  console.log(`\n`);
 });
 
 // Handle unhandled promise rejections
 process.on("unhandledRejection", (err) => {
   console.log("❌ Unhandled Rejection:", err.message);
-  // Don't crash the server, just log
 });
 
 // Handle uncaught exceptions
 process.on("uncaughtException", (err) => {
   console.log("❌ Uncaught Exception:", err.message);
-  // Don't crash the server, just log
 });
 
 // Graceful shutdown on termination
